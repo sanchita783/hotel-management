@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rooms &amp; Suites — Grand Hotel</title>
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="../index.html" class="nav-logo"><span class="logo-icon">⬡</span><span>Grand<strong>Hotel</strong></span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="rooms.html" class="active">Rooms</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn-outline">Sign In</a>
+      <a href="register.html" class="btn-primary">Book Now</a>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- Page Hero -->
+<section class="page-hero">
+  <div class="container">
+    <h1>Rooms &amp; Suites</h1>
+    <p>Discover spaces where luxury meets comfort — each room a world unto itself</p>
+  </div>
+</section>
+
+<!-- Filters -->
+<div class="filters-bar">
+  <div class="container">
+    <div class="filters-inner">
+      <div class="filter-group">
+        <label>Check-in</label>
+        <input type="date" id="filterCheckIn">
+      </div>
+      <div class="filter-group">
+        <label>Check-out</label>
+        <input type="date" id="filterCheckOut">
+      </div>
+      <div class="filter-group">
+        <label>Type</label>
+        <select id="filterType">
+          <option value="">All Types</option>
+          <option>Single</option><option>Double</option><option>Twin</option>
+          <option>Suite</option><option>Deluxe</option>
+          <option>Presidential</option><option>Family</option><option>Studio</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Max Price</label>
+        <select id="filterPrice">
+          <option value="99999">Any Price</option>
+          <option value="2000">Under ₹2,000</option>
+          <option value="3500">Under ₹3,500</option>
+          <option value="6000">Under ₹6,000</option>
+          <option value="10000">Under ₹10,000</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Guests</label>
+        <select id="filterCap">
+          <option value="1">1+</option>
+          <option value="2">2+</option>
+          <option value="3">3+</option>
+          <option value="4">4+</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Search</label>
+        <input type="text" id="filterSearch" placeholder="e.g. WiFi, Jacuzzi…" style="width:140px">
+      </div>
+      <button class="filter-btn" onclick="filterRooms()">Apply Filters</button>
+      <button class="filter-btn" onclick="resetFilters()"
+        style="background:#6b7280">Reset</button>
+      <span id="roomCount" style="font-size:.82rem;color:#6b7280;margin-left:auto">
+        8 rooms found
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Rooms Grid -->
+<div class="container">
+  <div class="rooms-page-grid" id="roomsPageGrid">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<!-- Booking Modal -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal" id="bookingModalContent">
+    <div class="modal-header">
+      <h3 id="bookingModalTitle">Book Your Room</h3>
+      <button class="modal-close" onclick="closeBookingModal()">✕</button>
+    </div>
+    <div id="bookingModalBody"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0">
+      <p>© 2024 GrandHotel. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="../index.html">Home</a>
+        <a href="contact.html">Contact</a>
+        <a href="login.html">Sign In</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script src="../js/rooms-data.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  // Set today as min date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('filterCheckIn').min  = today;
+  document.getElementById('filterCheckOut').min = today;
+
+  // Read URL params
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('checkIn'))   document.getElementById('filterCheckIn').value  = params.get('checkIn');
+  if (params.get('checkOut'))  document.getElementById('filterCheckOut').value = params.get('checkOut');
+  if (params.get('roomType'))  {
+    const sel = document.getElementById('filterType');
+    [...sel.options].forEach(o => { if (o.value.toLowerCase() === params.get('roomType').toLowerCase()) sel.value = o.value; });
+  }
+  if (params.get('guests'))    {
+    const sel = document.getElementById('filterCap');
+    sel.value = params.get('guests').replace(/\D/g,'')[0] || '1';
+  }
+
+  await renderAllRooms();
+  updateNavAuth();
+});
+
+async function resetFilters() {
+  document.getElementById('filterCheckIn').value  = '';
+  document.getElementById('filterCheckOut').value = '';
+  document.getElementById('filterType').value     = '';
+  document.getElementById('filterPrice').value    = '99999';
+  document.getElementById('filterCap').value      = '1';
+  document.getElementById('filterSearch').value   = '';
+  await renderAllRooms();
+  document.getElementById('roomCount').textContent = ROOMS.length + ' room' + (ROOMS.length !== 1 ? 's' : '') + ' found';
+}
+
+// Override handleBook to show booking modal
+function handleBook(id) {
+  const room = ROOMS.find(r => r.id === id);
+  if (!room) return;
+
+  if (!isLoggedIn()) {
+    showToast('Please sign in to book a room', 'error');
+    setTimeout(() => window.location.href = 'login.html', 1200);
+    return;
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  const b     = BADGE_STYLES[room.badge] || BADGE_STYLES.AVAILABLE;
+
+  document.getElementById('bookingModalTitle').textContent = `Book — ${room.name}`;
+  document.getElementById('bookingModalBody').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;padding:16px;background:#f9fafb;border-radius:10px;margin-bottom:24px">
+      <div class="room-img-inner ${room.bg}"
+           style="width:80px;height:60px;border-radius:8px;flex-shrink:0;position:relative;overflow:hidden"></div>
+      <div>
+        <div style="font-size:.72rem;font-weight:600;color:#92400e;text-transform:uppercase;letter-spacing:.5px">${room.type}</div>
+        <div style="font-weight:600;color:#1a1a2e">${room.name}</div>
+        <div style="font-size:.82rem;color:#6b7280">Room ${room.number} · Up to ${room.capacity} guest${room.capacity>1?'s':''}</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:1.2rem;font-weight:700;color:#1a1a2e">${fmtPrice(room.price)}</div>
+        <div style="font-size:.72rem;color:#6b7280">per night</div>
+      </div>
+    </div>
+
+    <div class="form-row" style="margin-bottom:16px">
+      <div class="form-group">
+        <label>Check-in Date</label>
+        <input type="date" id="bkCheckIn" class="form-input" min="${today}" max="${new Date(new Date().setFullYear(new Date().getFullYear()+1)).toISOString().split('T')[0]}" onchange="calcTotal()">
+      </div>
+      <div class="form-group">
+        <label>Check-out Date</label>
+        <input type="date" id="bkCheckOut" class="form-input" min="${today}" max="${new Date(new Date().setFullYear(new Date().getFullYear()+1)).toISOString().split('T')[0]}" onchange="calcTotal()">
+      </div>
+    </div>
+
+    <div class="form-row" style="margin-bottom:16px">
+      <div class="form-group">
+        <label>Number of Guests</label>
+        <select id="bkGuests" class="form-input">
+          ${[...Array(room.capacity)].map((_, i) =>
+            `<option value="${i+1}">${i+1} Guest${i>0?'s':''}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Payment Method</label>
+        <select id="bkPayment" class="form-input">
+          <option value="CASH">Cash</option>
+          <option value="UPI">UPI</option>
+          <option value="CREDIT_CARD">Credit Card</option>
+          <option value="DEBIT_CARD">Debit Card</option>
+          <option value="NET_BANKING">Net Banking</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Advance Payment (₹) <span style="color:#e53e3e;font-weight:400">— required to confirm booking</span></label>
+      <input type="number" id="bkAdvance" class="form-input" placeholder="Enter advance amount (₹)" min="1" step="100" onchange="calcTotal()" required>
+    </div>
+
+    <div class="form-group">
+      <label>Special Requests <span style="color:#9ca3af;font-weight:400">— optional</span></label>
+      <textarea id="bkRequests" class="form-input" rows="2"
+        placeholder="Early check-in, high floor, extra pillows…"></textarea>
+    </div>
+
+    <!-- Summary -->
+    <div id="bkSummary" style="display:none;background:#f9fafb;border-radius:10px;padding:16px;margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;font-size:.85rem;color:#6b7280;margin-bottom:6px">
+        <span id="bkNights">2 nights</span>
+        <span id="bkSubtotal">₹0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-weight:700;color:#1a1a2e;font-size:1rem;border-top:1px solid #e5e7eb;padding-top:10px">
+        <span>Total</span>
+        <span id="bkTotal">₹0</span>
+      </div>
+      <div id="bkBalance" style="display:flex;justify-content:space-between;font-size:.82rem;color:#6b7280;margin-top:4px">
+        <span>Balance Due at Check-in</span>
+        <span id="bkBalanceAmt">₹0</span>
+      </div>
+    </div>
+
+    <div class="error-msg" id="bkError"></div>
+    <button class="btn-auth" id="bkSubmitBtn" onclick="submitBooking(${room.id}, ${room.price})">
+      Confirm Booking
+    </button>`;
+
+  // Pre-fill dates from filter bar
+  const ci = document.getElementById('filterCheckIn')?.value;
+  const co = document.getElementById('filterCheckOut')?.value;
+  if (ci) document.getElementById('bkCheckIn').value  = ci;
+  if (co) document.getElementById('bkCheckOut').value = co;
+  calcTotal(room.price);
+
+  document.getElementById('bookingModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBookingModal() {
+  document.getElementById('bookingModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+let currentPrice = 0;
+function calcTotal(price) {
+  if (price) currentPrice = price;
+  const ci  = document.getElementById('bkCheckIn')?.value;
+  const co  = document.getElementById('bkCheckOut')?.value;
+  const currentYear = new Date().getFullYear();
+  const ciYear = ci ? parseInt(ci.split('-')[0]) : 0;
+  const coYear = co ? parseInt(co.split('-')[0]) : 0;
+  if (ci && (ciYear < currentYear || ciYear > currentYear + 1)) {
+    document.getElementById('bkError').textContent = 'Please enter a valid check-in year.';
+    document.getElementById('bkError').style.display = 'block';
+    document.getElementById('bkSubmitBtn').disabled = true;
+    return;
+  }
+  if (co && (coYear < currentYear || coYear > currentYear + 1)) {
+    document.getElementById('bkError').textContent = 'Please enter a valid check-out year.';
+    document.getElementById('bkError').style.display = 'block';
+    document.getElementById('bkSubmitBtn').disabled = true;
+    return;
+  }
+  const adv = parseFloat(document.getElementById('bkAdvance')?.value) || 0;
+  if (!ci || !co) return;
+  const nights = Math.round((new Date(co + 'T00:00:00') - new Date(ci + 'T00:00:00')) / 86400000);
+  if (nights <= 0) return;
+  const bkErr = document.getElementById('bkError');
+  if (nights > 90) {
+    bkErr.textContent = 'Booking duration cannot exceed 90 days. Please select a shorter stay.';
+    bkErr.style.display = 'block';
+    document.getElementById('bkSubmitBtn').disabled = true;
+    return;
+  } else {
+    bkErr.style.display = 'none';
+    document.getElementById('bkSubmitBtn').disabled = false;
+  }
+  const total   = nights * currentPrice;
+  const balance = Math.max(0, total - adv);
+  document.getElementById('bkSummary').style.display = 'block';
+  document.getElementById('bkNights').textContent    = `${nights} night${nights>1?'s':''} × ${fmtPrice(currentPrice)}`;
+  document.getElementById('bkSubtotal').textContent  = fmtPrice(total);
+  document.getElementById('bkTotal').textContent     = fmtPrice(total);
+  document.getElementById('bkBalanceAmt').textContent= fmtPrice(balance);
+}
+
+async function submitBooking(roomId, price) {
+  const btn    = document.getElementById('bkSubmitBtn');
+  const errEl  = document.getElementById('bkError');
+  errEl.style.display = 'none';
+
+  const checkInDate  = document.getElementById('bkCheckIn').value;
+  const checkOutDate = document.getElementById('bkCheckOut').value;
+  const numGuests    = parseInt(document.getElementById('bkGuests').value);
+  const payMethod    = document.getElementById('bkPayment').value;
+  const advance      = parseFloat(document.getElementById('bkAdvance').value) || 0;
+  const requests     = document.getElementById('bkRequests').value.trim();
+
+  if (!checkInDate || !checkOutDate) {
+    errEl.textContent = 'Please select check-in and check-out dates.';
+    errEl.style.display = 'block'; return;
+  }
+  if (advance <= 0) { errEl.textContent = 'Advance payment is required to confirm booking.'; errEl.style.display = 'block'; return; }
+  if (new Date(checkOutDate) <= new Date(checkInDate)) {
+    errEl.textContent = 'Check-out date must be after check-in date.';
+    errEl.style.display = 'block'; return;
+  }
+
+  btnLoading(btn, true);
+  try {
+    const res = await apiFetch('/bookings/create', {
+      method: 'POST',
+      body: {
+        roomId, checkInDate, checkOutDate, numberOfGuests: numGuests,
+        paymentMethod: payMethod, advancePayment: advance,
+        specialRequests: requests || null
+      }
+    });
+
+    // apiFetch now throws on error, so res is always success here
+    closeBookingModal();
+    showToast(`Booking confirmed! Ref: ${res.data.bookingReference} 🎉`, 'success');
+    setTimeout(() => window.location.href = 'my-bookings.html', 2000);
+
+  } catch (e) {
+    // Show exact backend error message
+    const errorMsg = e.message && e.message !== 'undefined'
+      ? e.message
+      : 'Connection failed. Server running ahe ka check kara (localhost:8080).';
+    errEl.textContent = errorMsg;
+    errEl.style.display = 'block';
+    btnLoading(btn, false);
+  }
+}
+
+// Close on overlay click
+document.getElementById('bookingModal').addEventListener('click', function(e) {
+  if (e.target === this) closeBookingModal();
+});
+</script>
+</body>
+</html>

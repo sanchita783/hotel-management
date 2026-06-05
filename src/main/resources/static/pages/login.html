@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Grand Hotel</title>
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-icon">⬡</span>
+      <span>Grand<strong>Hotel</strong></span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="rooms.html">Rooms</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn-outline">Sign In</a>
+      <a href="register.html" class="btn-primary">Register</a>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- Auth Page -->
+<div class="auth-page">
+  <div class="auth-bg-shapes">
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="shape s3"></div>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span>⬡</span>
+      Grand<strong>Hotel</strong>
+    </div>
+    <h2>Welcome Back</h2>
+    <p class="auth-subtitle">Sign in to manage your bookings and enjoy exclusive benefits</p>
+
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="success-msg" id="successMsg"></div>
+
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+    </div>
+
+    <div class="form-group" style="position:relative">
+      <label for="password">Password</label>
+      <input type="password" id="password" class="form-input" placeholder="••••••••" autocomplete="current-password">
+      <button type="button" onclick="togglePwd('password','eyeBtn')" id="eyeBtn"
+        style="position:absolute;right:14px;bottom:12px;background:none;border:none;cursor:pointer;color:#9ca3af;font-size:.85rem">
+        👁
+      </button>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:20px">
+      <a href="forgot-password.html" style="font-size:.82rem;color:#92400e;font-weight:500">Forgot password?</a>
+    </div>
+
+    <button class="btn-auth" id="loginBtn" onclick="handleLogin()">Sign In</button>
+
+    <div class="auth-divider">or continue with</div>
+
+    <!-- Demo quick-login buttons -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <button onclick="demoLogin('customer')"
+        style="padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;font-size:.82rem;font-weight:500;color:#374151;transition:.2s"
+        onmouseover="this.style.borderColor='#c9a84c'" onmouseout="this.style.borderColor='#e5e7eb'">
+        🧑 Demo Customer
+      </button>
+      <button onclick="demoLogin('admin')"
+        style="padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;font-size:.82rem;font-weight:500;color:#374151;transition:.2s"
+        onmouseover="this.style.borderColor='#c9a84c'" onmouseout="this.style.borderColor='#e5e7eb'">
+        👑 Demo Admin
+      </button>
+    </div>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="register.html">Create one free</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+  // Redirect if already logged in
+  if (isLoggedIn()) {
+    window.location.href = isAdmin()
+      ? 'dashboard-admin.html' : 'dashboard.html';
+  }
+
+  function togglePwd(id, btnId) {
+    const inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  async function handleLogin() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('loginBtn');
+    const errMsg   = document.getElementById('errorMsg');
+
+    errMsg.style.display = 'none';
+
+    if (!email || !password) {
+      errMsg.textContent = 'Please enter your email and password.';
+      errMsg.style.display = 'block'; return;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      errMsg.textContent = 'Please enter a valid email address.';
+      errMsg.style.display = 'block'; return;
+    }
+
+    btnLoading(btn, true);
+
+    try {
+      const res = await apiFetch('/auth/login', {
+        method: 'POST',
+        body: { email, password }
+      });
+
+      if (res?.success) {
+        setSession(res.data);
+        showToast('Login successful! Welcome back 👋', 'success');
+        setTimeout(() => {
+          window.location.href = res.data.role === 'ADMIN'
+            ? 'dashboard-admin.html' : 'dashboard.html';
+        }, 800);
+      } else {
+        errMsg.textContent = res?.message || 'Invalid email or password. Please try again.';
+        errMsg.style.display = 'block';
+        btnLoading(btn, false);
+      }
+    } catch (e) {
+      errMsg.textContent = 'Connection failed. Please check if the server is running.';
+      errMsg.style.display = 'block';
+      btnLoading(btn, false);
+    }
+  }
+
+  function demoLogin(role) {
+    if (role === 'admin') {
+      document.getElementById('email').value    = 'admin@grandhotel.com';
+      document.getElementById('password').value = 'Admin@1234';
+    } else {
+      document.getElementById('email').value    = 'rahul@example.com';
+      document.getElementById('password').value = 'Admin@1234';
+    }
+    handleLogin();
+  }
+
+  // Enter key support
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleLogin();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — Grand Hotel</title>
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-page">
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="../index.html" class="nav-logo"><span class="logo-icon">⬡</span><span>Grand<strong>Hotel</strong></span></a>
+    <div class="nav-actions" id="navAuthArea"></div>
+  </div>
+</nav>
+
+<!-- Dashboard Header -->
+<div class="dash-header">
+  <div class="container">
+    <h1 id="dashGreeting">My Dashboard</h1>
+    <p id="dashSubtitle">Manage your bookings, payments and service requests</p>
+  </div>
+</div>
+
+<div class="dash-layout">
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebarAvatar">U</div>
+      <div>
+        <strong id="sidebarName">Loading…</strong>
+        <span id="sidebarEmail">—</span>
+      </div>
+    </div>
+    <nav class="dash-nav">
+      <a href="#" class="active" onclick="showTab('overview',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Overview
+      </a>
+      <a href="#" onclick="showTab('bookings',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        My Bookings
+      </a>
+      <a href="#" onclick="showTab('payments',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Payments
+      </a>
+      <a href="#" onclick="showTab('services',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Services
+      </a>
+      <a href="#" onclick="showTab('enquiries',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Enquiries
+      </a>
+      <a href="#" onclick="showTab('profile',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        My Profile
+      </a>
+      <div style="margin-top:auto;padding:16px 0 0">
+        <a href="#" onclick="logout()" style="color:#ef4444!important">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dash-main" id="dashMain">
+    <div id="tab-overview">
+      <!-- Stats -->
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card">
+          <div class="s-icon" style="background:#fef3c7"><span style="font-size:1.2rem">📅</span></div>
+          <div class="s-label">Total Bookings</div>
+          <div class="s-val" id="totalBookings">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-icon" style="background:#dbeafe"><span style="font-size:1.2rem">🏨</span></div>
+          <div class="s-label">Active Stays</div>
+          <div class="s-val" id="activeStays">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-icon" style="background:#dcfce7"><span style="font-size:1.2rem">💳</span></div>
+          <div class="s-label">Total Spent</div>
+          <div class="s-val" id="totalSpent">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-icon" style="background:#fce7f3"><span style="font-size:1.2rem">🛎️</span></div>
+          <div class="s-label">Service Requests</div>
+          <div class="s-val" id="totalServices">—</div>
+        </div>
+      </div>
+
+      <!-- Recent Bookings preview -->
+      <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:24px;margin-bottom:24px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <h3 style="font-size:1rem;font-weight:600">Recent Bookings</h3>
+          <button onclick="showTab('bookings')" style="font-size:.82rem;color:#92400e;background:none;border:none;cursor:pointer;font-weight:600">View All →</button>
+        </div>
+        <div id="recentBookings"><div class="loading-placeholder"></div></div>
+      </div>
+
+      <!-- Quick actions -->
+      <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:24px">
+        <h3 style="font-size:1rem;font-weight:600;margin-bottom:20px">Quick Actions</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+          <a href="rooms.html" class="quick-action-btn" style="background:#fef3c7;color:#92400e">
+            <span style="font-size:1.5rem">🛏️</span>Book a Room
+          </a>
+          <a href="contact.html" class="quick-action-btn" style="background:#dbeafe;color:#1e40af">
+            <span style="font-size:1.5rem">📩</span>Send Enquiry
+          </a>
+          <button onclick="showTab('services')" class="quick-action-btn" style="background:#dcfce7;color:#166534;border:none;cursor:pointer;font-family:inherit">
+            <span style="font-size:1.5rem">🛎️</span>Request Service
+          </button>
+          <button onclick="showTab('profile')" class="quick-action-btn" style="background:#fce7f3;color:#9d174d;border:none;cursor:pointer;font-family:inherit">
+            <span style="font-size:1.5rem">👤</span>Edit Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bookings Tab -->
+    <div id="tab-bookings" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <h2 style="font-size:1.2rem;font-weight:600">My Bookings</h2>
+        <a href="rooms.html" class="btn-book" style="display:inline-flex;align-items:center;gap:6px">
+          + New Booking
+        </a>
+      </div>
+      <div id="bookingsList"><div class="loading-placeholder"></div></div>
+    </div>
+
+    <!-- Payments Tab -->
+    <div id="tab-payments" style="display:none">
+      <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:24px">Payment History</h2>
+      <div id="paymentsList"><div class="loading-placeholder"></div></div>
+    </div>
+
+    <!-- Services Tab -->
+    <div id="tab-services" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <h2 style="font-size:1.2rem;font-weight:600">My Service Requests</h2>
+        <button onclick="openServiceRequest()" class="btn-book" style="display:inline-flex;gap:6px">+ Request Service</button>
+      </div>
+      <div id="servicesList"><div class="loading-placeholder"></div></div>
+    </div>
+
+    <!-- Enquiries Tab -->
+    <div id="tab-enquiries" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <h2 style="font-size:1.2rem;font-weight:600">My Enquiries</h2>
+        <a href="contact.html" class="btn-book">+ New Enquiry</a>
+      </div>
+      <div id="enquiriesList"><div class="loading-placeholder"></div></div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="tab-profile" style="display:none">
+      <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:24px">My Profile</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <!-- Profile form -->
+        <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:28px">
+          <h3 style="font-size:.95rem;font-weight:600;margin-bottom:20px">Personal Information</h3>
+          <div class="error-msg" id="profileError"></div>
+          <div class="success-msg" id="profileSuccess"></div>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input id="pFirstName" class="form-input" type="text"></div>
+            <div class="form-group"><label>Last Name</label><input id="pLastName" class="form-input" type="text"></div>
+          </div>
+          <div class="form-group"><label>Phone</label><input id="pPhone" class="form-input" type="tel"></div>
+          <div class="form-group"><label>Address</label><input id="pAddress" class="form-input" type="text"></div>
+          <button class="btn-auth" id="saveProfileBtn" onclick="saveProfile()">Save Changes</button>
+        </div>
+        <!-- Change password -->
+        <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:28px">
+          <h3 style="font-size:.95rem;font-weight:600;margin-bottom:20px">Change Password</h3>
+          <div class="error-msg" id="pwdError"></div>
+          <div class="success-msg" id="pwdSuccess"></div>
+          <div class="form-group"><label>Current Password</label><input id="curPwd" class="form-input" type="password"></div>
+          <div class="form-group"><label>New Password</label><input id="newPwd" class="form-input" type="password"></div>
+          <div class="form-group"><label>Confirm New Password</label><input id="confPwd" class="form-input" type="password"></div>
+          <button class="btn-auth" id="changePwdBtn" onclick="changePassword()">Update Password</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/main.js"></script>
+<script src="../js/rooms-data.js"></script>
+<style>
+  .loading-placeholder{height:200px;background:linear-gradient(90deg,#f3f4f6 25%,#e9eaec 50%,#f3f4f6 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+  @keyframes shimmer{to{background-position:-200% 0}}
+  .quick-action-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 12px;border-radius:var(--radius);font-size:.85rem;font-weight:600;text-align:center;transition:.2s;text-decoration:none}
+  .quick-action-btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+  .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse;font-size:.84rem}
+  th{padding:12px 16px;text-align:left;font-weight:600;color:#374151;background:#f9fafb;border-bottom:1px solid var(--border);white-space:nowrap}
+  td{padding:12px 16px;color:#374151;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#fafafa}
+  .empty-state{text-align:center;padding:60px 20px;color:#9ca3af}
+  .empty-state .empty-icon{font-size:3rem;margin-bottom:12px}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (!requireAuth()) return;
+  const user = getUser();
+  const initials = user.fullName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('sidebarAvatar').textContent = initials;
+  document.getElementById('sidebarName').textContent   = user.fullName;
+  document.getElementById('sidebarEmail').textContent  = user.email;
+  document.getElementById('dashGreeting').textContent  = `Welcome back, ${user.fullName.split(' ')[0]}! 👋`;
+  updateNavAuth();
+  loadDashboard();
+});
+
+async function loadDashboard() {
+  try {
+    const [bookRes, payRes, svcRes, enqRes] = await Promise.all([
+      apiFetch('/bookings/my-bookings'),
+      apiFetch('/payments/my-payments'),
+      apiFetch('/services/my-services'),
+      apiFetch('/enquiries/my-enquiries')
+    ]);
+    const bookings = bookRes?.data || [];
+    const payments = payRes?.data  || [];
+    const services = svcRes?.data  || [];
+    const enquiries= enqRes?.data  || [];
+
+    // Stats
+    const activeB = bookings.filter(b => ['CONFIRMED','CHECKED_IN'].includes(b.bookingStatus));
+    const spent   = payments.filter(p => p.paymentStatus === 'COMPLETED')
+                             .reduce((s, p) => s + p.amount, 0);
+
+    document.getElementById('totalBookings').textContent = bookings.length;
+    document.getElementById('activeStays').textContent   = activeB.length;
+    document.getElementById('totalSpent').textContent    = fmtPrice(spent);
+    document.getElementById('totalServices').textContent = services.length;
+
+    // Recent bookings (last 3)
+    renderRecentBookings(bookings.slice(0,3));
+
+    // Store for tabs
+    window._bookings  = bookings;
+    window._payments  = payments;
+    window._services  = services;
+    window._enquiries = enquiries;
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function renderRecentBookings(list) {
+  const el = document.getElementById('recentBookings');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><p>No bookings yet. <a href="rooms.html" style="color:#92400e;font-weight:600">Browse rooms →</a></p></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Reference</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Amount</th><th>Status</th></tr></thead>
+    <tbody>${list.map(b=>`<tr>
+      <td style="font-family:monospace;font-weight:600;color:#92400e">${b.bookingReference}</td>
+      <td>${b.roomNumber} <span style="color:#6b7280">(${b.roomType})</span></td>
+      <td>${fmtDate(b.checkInDate)}</td>
+      <td>${fmtDate(b.checkOutDate)}</td>
+      <td style="font-weight:600">${fmtPrice(b.totalAmount)}</td>
+      <td>${statusBadge(b.bookingStatus)}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function showTab(name, linkEl) {
+  ['overview','bookings','payments','services','enquiries','profile'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
+  if (linkEl) linkEl.classList.add('active');
+
+  if (name==='bookings')  renderBookingsTab();
+  if (name==='payments')  renderPaymentsTab();
+  if (name==='services')  renderServicesTab();
+  if (name==='enquiries') renderEnquiriesTab();
+  if (name==='profile')   loadProfileForm();
+}
+
+function renderBookingsTab() {
+  const list = window._bookings || [];
+  const el   = document.getElementById('bookingsList');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><p>You have no bookings yet.</p><a href="rooms.html" class="btn-book" style="display:inline-block;margin-top:16px">Browse Rooms</a></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Reference</th><th>Room</th><th>Dates</th><th>Nights</th><th>Guests</th><th>Total</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${list.map(b=>`<tr>
+      <td style="font-family:monospace;font-weight:600;color:#92400e;font-size:.8rem">${b.bookingReference}</td>
+      <td><strong>${b.roomNumber}</strong><br><span style="color:#9ca3af;font-size:.77rem">${b.roomType}</span></td>
+      <td style="font-size:.8rem">${fmtDate(b.checkInDate)}<br>→ ${fmtDate(b.checkOutDate)}</td>
+      <td style="text-align:center">${b.numberOfNights}</td>
+      <td style="text-align:center">${b.numberOfGuests}</td>
+      <td style="font-weight:600">${fmtPrice(b.totalAmount)}</td>
+      <td style="color:${b.balanceAmount > 0 ? '#ef4444':'#10b981'}">${fmtPrice(b.balanceAmount)}</td>
+      <td>${statusBadge(b.bookingStatus)}</td>
+      <td>${b.bookingStatus === 'PENDING' || b.bookingStatus === 'CONFIRMED'
+        ? `<button onclick="cancelBooking(${b.id},'${b.bookingReference}')"
+             style="background:#fef2f2;color:#ef4444;border:1px solid #fee2e2;padding:5px 10px;border-radius:6px;font-size:.76rem;cursor:pointer;font-weight:500">Cancel</button>`
+        : '—'
+      }</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+async function cancelBooking(id, ref) {
+  if (!confirm(`Cancel booking ${ref}? This action cannot be undone.`)) return;
+  const res = await apiFetch(`/bookings/${id}/cancel`, {
+    method: 'PATCH', body: { reason: 'Cancelled by guest' }
+  });
+  if (res?.success) {
+    showToast('Booking cancelled successfully', 'success');
+    window._bookings = (window._bookings || []).map(b =>
+      b.id === id ? { ...b, bookingStatus: 'CANCELLED' } : b);
+    renderBookingsTab();
+  } else {
+    showToast(res?.message || 'Cancellation failed', 'error');
+  }
+}
+
+function renderPaymentsTab() {
+  const list = window._payments || [];
+  const el   = document.getElementById('paymentsList');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">💳</div><p>No payment records found.</p></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Transaction ID</th><th>Booking Ref</th><th>Amount</th><th>Method</th><th>Type</th><th>Date</th><th>Status</th></tr></thead>
+    <tbody>${list.map(p=>`<tr>
+      <td style="font-family:monospace;font-size:.78rem">${p.transactionId}</td>
+      <td style="color:#92400e;font-weight:500;font-size:.8rem">${p.bookingReference}</td>
+      <td style="font-weight:700">${fmtPrice(p.amount)}</td>
+      <td>${p.paymentMethod?.replace('_',' ')}</td>
+      <td>${p.paymentType?.replace('_',' ')}</td>
+      <td style="font-size:.8rem">${fmtDateTime(p.paymentDate)}</td>
+      <td>${statusBadge(p.paymentStatus)}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function renderServicesTab() {
+  const list = window._services || [];
+  const el   = document.getElementById('servicesList');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🛎️</div><p>No service requests yet.</p></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Booking Ref</th><th>Service</th><th>Description</th><th>Amount</th><th>Requested At</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${list.map(s=>`<tr>
+      <td style="font-size:.8rem;color:#92400e">${s.bookingReference}</td>
+      <td><strong>${s.serviceType?.replace('_',' ')}</strong></td>
+      <td style="max-width:200px;font-size:.82rem">${s.serviceDescription}</td>
+      <td>${s.amount ? fmtPrice(s.amount) : '—'}</td>
+      <td style="font-size:.8rem">${fmtDateTime(s.requestedAt)}</td>
+      <td>${statusBadge(s.serviceStatus)}</td>
+      <td>${s.serviceStatus === 'REQUESTED'
+        ? `<button onclick="cancelService(${s.id})"
+             style="background:#fef2f2;color:#ef4444;border:1px solid #fee2e2;padding:5px 10px;border-radius:6px;font-size:.76rem;cursor:pointer">Cancel</button>`
+        : '—'
+      }</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+async function cancelService(id) {
+  if (!confirm('Cancel this service request?')) return;
+  const res = await apiFetch(`/services/${id}/cancel`, { method: 'DELETE' });
+  if (res?.success) {
+    showToast('Service cancelled', 'success');
+    window._services = (window._services || []).map(s =>
+      s.id === id ? { ...s, serviceStatus: 'CANCELLED' } : s);
+    renderServicesTab();
+  } else {
+    showToast(res?.message || 'Failed', 'error');
+  }
+}
+
+function renderEnquiriesTab() {
+  const list = window._enquiries || [];
+  const el   = document.getElementById('enquiriesList');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📩</div><p>No enquiries yet.</p><a href="contact.html" class="btn-book" style="display:inline-block;margin-top:16px">Send Enquiry</a></div>`;
+    return;
+  }
+  el.innerHTML = list.map(e=>`
+    <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-weight:600;color:#1a1a2e">${e.subject}</div>
+          <div style="font-size:.78rem;color:#9ca3af;margin-top:2px">${fmtDateTime(e.createdAt)}</div>
+        </div>
+        ${statusBadge(e.enquiryStatus)}
+      </div>
+      <div style="font-size:.85rem;color:#374151;line-height:1.6;padding:12px;background:#f9fafb;border-radius:8px;margin-bottom:${e.response?'12px':'0'}">
+        ${e.message}
+      </div>
+      ${e.response ? `
+      <div style="padding:12px;background:#f0fdf4;border-radius:8px;border-left:3px solid #10b981">
+        <div style="font-size:.72rem;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Staff Response</div>
+        <div style="font-size:.85rem;color:#374151;line-height:1.6">${e.response}</div>
+      </div>` : ''}
+    </div>`).join('');
+}
+
+async function openServiceRequest() {
+  const bookings = (window._bookings || []).filter(b =>
+    ['CONFIRMED','CHECKED_IN'].includes(b.bookingStatus));
+
+  if (!bookings.length) {
+    showToast('You need an active booking to request a service', 'error'); return;
+  }
+
+  const bookingOpts = bookings.map(b =>
+    `<option value="${b.id}">${b.bookingReference} — Room ${b.roomNumber}</option>`).join('');
+
+  document.getElementById('modalTitle').textContent = 'Request a Service';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="form-group">
+      <label>Select Booking</label>
+      <select id="svcBooking" class="form-input">${bookingOpts}</select>
+    </div>
+    <div class="form-group">
+      <label>Service Type</label>
+      <select id="svcType" class="form-input">
+        <option value="ROOM_SERVICE">Room Service</option>
+        <option value="LAUNDRY">Laundry</option>
+        <option value="RESTAURANT">Restaurant Reservation</option>
+        <option value="HOUSEKEEPING">Housekeeping</option>
+        <option value="SPA">Spa &amp; Massage</option>
+        <option value="GYM">Gym Access</option>
+        <option value="AIRPORT_TRANSFER">Airport Transfer</option>
+        <option value="CONCIERGE">Concierge</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="svcDesc" class="form-input" rows="3"
+        placeholder="Describe what you need in detail…"></textarea>
+    </div>
+    <div class="error-msg" id="svcError"></div>
+    <button class="btn-auth" id="svcSubmitBtn" onclick="submitService()">Submit Request</button>`;
+
+  openModal();
+}
+
+async function submitService() {
+  const btn     = document.getElementById('svcSubmitBtn');
+  const errEl   = document.getElementById('svcError');
+  const bookingId = parseInt(document.getElementById('svcBooking').value);
+  const svcType   = document.getElementById('svcType').value;
+  const svcDesc   = document.getElementById('svcDesc').value.trim();
+
+  if (!svcDesc) { errEl.textContent='Please describe your request.'; errEl.style.display='block'; return; }
+
+  btnLoading(btn, true);
+  const res = await apiFetch('/services/request', {
+    method: 'POST',
+    body: { bookingId, serviceType: svcType, serviceDescription: svcDesc }
+  });
+
+  if (res?.success) {
+    closeModal();
+    showToast('Service request submitted! 🛎️', 'success');
+    window._services = [res.data, ...(window._services || [])];
+    renderServicesTab();
+  } else {
+    errEl.textContent = res?.message || 'Failed to submit request.';
+    errEl.style.display = 'block';
+    btnLoading(btn, false);
+  }
+}
+
+async function loadProfileForm() {
+  const res = await apiFetch('/users/profile');
+  if (!res?.success) return;
+  const u = res.data;
+  document.getElementById('pFirstName').value = u.firstName || '';
+  document.getElementById('pLastName').value  = u.lastName  || '';
+  document.getElementById('pPhone').value     = u.phone     || '';
+  document.getElementById('pAddress').value   = u.address   || '';
+}
+
+async function saveProfile() {
+  const btn = document.getElementById('saveProfileBtn');
+  const err = document.getElementById('profileError');
+  const suc = document.getElementById('profileSuccess');
+  err.style.display = suc.style.display = 'none';
+
+  btnLoading(btn, true);
+  const user = getUser();
+  const res  = await apiFetch(`/users/${user.id}/profile`, {
+    method: 'PUT',
+    body: {
+      firstName: document.getElementById('pFirstName').value.trim(),
+      lastName:  document.getElementById('pLastName').value.trim(),
+      phone:     document.getElementById('pPhone').value.trim(),
+      address:   document.getElementById('pAddress').value.trim()
+    }
+  });
+
+  if (res?.success) {
+    const stored = getUser();
+    stored.fullName = res.data.firstName + ' ' + res.data.lastName;
+    localStorage.setItem('user', JSON.stringify(stored));
+    suc.textContent = 'Profile updated successfully!';
+    suc.style.display = 'block';
+  } else {
+    err.textContent = res?.message || 'Update failed.';
+    err.style.display = 'block';
+  }
+  btnLoading(btn, false);
+}
+
+async function changePassword() {
+  const btn  = document.getElementById('changePwdBtn');
+  const err  = document.getElementById('pwdError');
+  const suc  = document.getElementById('pwdSuccess');
+  err.style.display = suc.style.display = 'none';
+
+  const cur  = document.getElementById('curPwd').value;
+  const nw   = document.getElementById('newPwd').value;
+  const conf = document.getElementById('confPwd').value;
+
+  if (!cur || !nw || !conf) { err.textContent='All fields are required.'; err.style.display='block'; return; }
+  if (nw !== conf) { err.textContent='New passwords do not match.'; err.style.display='block'; return; }
+  if (nw.length < 8) { err.textContent='Password must be at least 8 characters.'; err.style.display='block'; return; }
+
+  btnLoading(btn, true);
+  const user = getUser();
+  const res  = await apiFetch(`/users/${user.id}/change-password`, {
+    method: 'PUT',
+    body: { currentPassword: cur, newPassword: nw, confirmPassword: conf }
+  });
+
+  if (res?.success) {
+    suc.textContent = 'Password changed successfully!';
+    suc.style.display = 'block';
+    document.getElementById('curPwd').value = '';
+    document.getElementById('newPwd').value = '';
+    document.getElementById('confPwd').value = '';
+  } else {
+    err.textContent = res?.message || 'Failed to change password.';
+    err.style.display = 'block';
+  }
+  btnLoading(btn, false);
+}
+</script>
+</body>
+</html>

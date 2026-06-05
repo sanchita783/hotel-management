@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Bookings — Grand Hotel</title>
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+.booking-card{
+  background:#fff;border-radius:16px;
+  border:1px solid var(--border);
+  overflow:hidden;margin-bottom:20px;
+  transition:.25s;
+}
+.booking-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.booking-card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  background:#fafafa;
+}
+.booking-ref{
+  font-family:monospace;font-size:.9rem;
+  font-weight:700;color:#92400e;
+  background:#fef3c7;padding:4px 12px;
+  border-radius:6px;letter-spacing:.5px;
+}
+.booking-card-body{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:0;padding:0;
+}
+.booking-detail-item{
+  padding:20px 24px;border-right:1px solid var(--border);
+}
+.booking-detail-item:last-child{border-right:none}
+.booking-detail-item label{
+  display:block;font-size:.72rem;font-weight:600;
+  color:var(--text-muted);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:4px;
+}
+.booking-detail-item span{
+  font-size:.92rem;font-weight:600;color:var(--dark);
+}
+.booking-card-footer{
+  padding:16px 24px;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.booking-amount{font-size:1.2rem;font-weight:700;color:var(--dark)}
+.booking-amount span{font-size:.78rem;color:var(--text-muted);font-weight:400}
+.payment-progress{
+  display:flex;align-items:center;gap:12px;
+}
+.progress-bar{
+  width:120px;height:6px;background:#e5e7eb;
+  border-radius:3px;overflow:hidden;
+}
+.progress-fill{height:100%;background:#10b981;border-radius:3px;transition:.5s}
+.booking-actions{display:flex;gap:8px;flex-wrap:wrap}
+.tab-btn{
+  padding:10px 24px;border-radius:8px;border:1.5px solid var(--border);
+  background:#fff;cursor:pointer;font-size:.85rem;font-weight:500;
+  color:var(--text-muted);transition:.2s;
+}
+.tab-btn.active{
+  background:var(--dark);color:#fff;border-color:var(--dark);
+}
+.tab-btn:hover:not(.active){background:#f9fafb}
+</style>
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-icon">⬡</span><span>Grand<strong>Hotel</strong></span>
+    </a>
+    <div class="nav-actions" id="navAuthArea"></div>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>My Bookings</h1>
+    <p>View and manage all your reservations at Grand Hotel</p>
+  </div>
+</section>
+
+<div style="padding:48px 0;background:#f9fafb;min-height:60vh">
+  <div class="container">
+
+    <!-- Filter Tabs -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px">
+      <button class="tab-btn active" onclick="filterBookings('ALL',this)">All</button>
+      <button class="tab-btn" onclick="filterBookings('PENDING',this)">Pending</button>
+      <button class="tab-btn" onclick="filterBookings('CONFIRMED',this)">Confirmed</button>
+      <button class="tab-btn" onclick="filterBookings('CHECKED_IN',this)">Checked In</button>
+      <button class="tab-btn" onclick="filterBookings('CHECKED_OUT',this)">Completed</button>
+      <button class="tab-btn" onclick="filterBookings('CANCELLED',this)">Cancelled</button>
+      <a href="rooms.html"
+        style="margin-left:auto;padding:10px 20px;background:var(--gold);color:#1a0a00;border-radius:8px;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:6px">
+        + New Booking
+      </a>
+    </div>
+
+    <!-- Booking count -->
+    <div style="margin-bottom:20px;font-size:.85rem;color:var(--text-muted)" id="bookingCountLabel"></div>
+
+    <!-- Bookings list -->
+    <div id="bookingsList">
+      <div style="height:200px;background:linear-gradient(90deg,#f3f4f6 25%,#e9eaec 50%,#f3f4f6 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Make Payment</h3>
+      <button class="modal-close" onclick="closePaymentModal()">✕</button>
+    </div>
+    <div id="paymentModalBody"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0">
+      <p>© 2024 GrandHotel. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="../index.html">Home</a>
+        <a href="rooms.html">Browse Rooms</a>
+        <a href="dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+@keyframes shimmer{to{background-position:-200% 0}}
+</style>
+<script src="../js/main.js"></script>
+<script>
+let _allBookings = [];
+let _currentFilter = 'ALL';
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!requireAuth()) return;
+  updateNavAuth();
+  loadBookings();
+});
+
+async function loadBookings() {
+  const res = await apiFetch('/bookings/my-bookings');
+  _allBookings = res?.data || [];
+  renderBookings(_allBookings);
+}
+
+function filterBookings(status, btn) {
+  _currentFilter = status;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const filtered = status === 'ALL'
+    ? _allBookings
+    : _allBookings.filter(b => b.bookingStatus === status);
+  renderBookings(filtered);
+}
+
+function renderBookings(list) {
+  const el = document.getElementById('bookingsList');
+  document.getElementById('bookingCountLabel').textContent =
+    `Showing ${list.length} booking${list.length !== 1 ? 's' : ''}`;
+
+  if (!list.length) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:80px 20px;background:#fff;border-radius:16px;border:1px solid var(--border)">
+        <div style="font-size:4rem;margin-bottom:16px">📅</div>
+        <h3 style="font-weight:600;color:var(--dark);margin-bottom:8px">No bookings found</h3>
+        <p style="color:var(--text-muted);margin-bottom:24px">
+          ${_currentFilter === 'ALL'
+            ? "You haven't made any bookings yet."
+            : `No ${_currentFilter.toLowerCase()} bookings.`}
+        </p>
+        <a href="rooms.html"
+          style="display:inline-block;padding:12px 28px;background:var(--dark);color:#fff;border-radius:10px;font-weight:600">
+          Browse Rooms
+        </a>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = list.map(b => {
+    const nights   = b.numberOfNights || 0;
+    const total    = b.totalAmount || 0;
+    const paid     = (b.advancePayment || 0);
+    const balance  = b.balanceAmount || 0;
+    const pct      = total > 0 ? Math.round((paid / total) * 100) : 0;
+    const canCancel= ['PENDING','CONFIRMED'].includes(b.bookingStatus);
+    const canPay   = ['PENDING','CONFIRMED'].includes(b.bookingStatus) && balance > 0;
+
+    return `
+    <div class="booking-card">
+      <div class="booking-card-header">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span class="booking-ref">${b.bookingReference}</span>
+          ${statusBadge(b.bookingStatus)}
+        </div>
+        <div style="font-size:.8rem;color:var(--text-muted)">
+          Booked on ${fmtDate(b.createdAt)}
+        </div>
+      </div>
+
+      <div class="booking-card-body">
+        <div class="booking-detail-item">
+          <label>Room</label>
+          <span>${b.roomNumber}</span>
+          <div style="font-size:.78rem;color:var(--text-muted)">${b.roomType}</div>
+        </div>
+        <div class="booking-detail-item">
+          <label>Check-In</label>
+          <span>${fmtDate(b.checkInDate)}</span>
+        </div>
+        <div class="booking-detail-item">
+          <label>Check-Out</label>
+          <span>${fmtDate(b.checkOutDate)}</span>
+          <div style="font-size:.78rem;color:var(--text-muted)">${nights} night${nights !== 1 ? 's' : ''}</div>
+        </div>
+        <div class="booking-detail-item">
+          <label>Guests</label>
+          <span>${b.numberOfGuests} guest${b.numberOfGuests !== 1 ? 's' : ''}</span>
+        </div>
+      </div>
+
+      <div class="booking-card-footer">
+        <div>
+          <div class="booking-amount">
+            ${fmtPrice(total)}
+            <span> total</span>
+          </div>
+          ${balance > 0 ? `
+          <div class="payment-progress" style="margin-top:8px">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${pct}%"></div>
+            </div>
+            <span style="font-size:.76rem;color:var(--text-muted)">
+              ${fmtPrice(paid)} paid · ${fmtPrice(balance)} due
+            </span>
+          </div>` : `
+          <div style="font-size:.78rem;color:#10b981;font-weight:600;margin-top:6px">
+            ✓ Fully paid
+          </div>`}
+        </div>
+
+        <div class="booking-actions">
+          ${b.bookingStatus === 'PENDING' ? `
+          <a href="payment.html?bookingId=${b.id}&ref=${b.bookingReference}"
+            style="padding:9px 18px;background:#1a1a2e;color:#c9a84c;border:none;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;display:inline-block;text-decoration:none">
+            💳 Complete Payment
+          </a>` : ''}
+
+          ${canPay && b.bookingStatus !== 'PENDING' ? `
+          <button onclick="openPaymentModal(${b.id},'${b.bookingReference}',${balance})"
+            style="padding:9px 18px;background:#dbeafe;color:#1e40af;border:none;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer">
+            💳 Pay Balance ${fmtPrice(balance)}
+          </button>` : ''}
+
+          ${b.bookingStatus === 'CONFIRMED' || b.bookingStatus === 'CHECKED_IN' ? `
+          <button onclick="openServiceRequest(${b.id},'${b.bookingReference}')"
+            style="padding:9px 18px;background:#dcfce7;color:#166534;border:none;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer">
+            🛎️ Request Service
+          </button>` : ''}
+
+          ${canCancel ? `
+          <button onclick="cancelBooking(${b.id},'${b.bookingReference}')"
+            style="padding:9px 18px;background:#fef2f2;color:#dc2626;border:1px solid #fee2e2;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer">
+            Cancel
+          </button>` : ''}
+
+          ${b.specialRequests ? `
+          <button onclick="showSpecialRequests('${b.bookingReference}','${b.specialRequests}')"
+            style="padding:9px 18px;background:#f9fafb;color:var(--text-muted);border:1px solid var(--border);border-radius:8px;font-size:.82rem;cursor:pointer">
+            View Notes
+          </button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function cancelBooking(id, ref) {
+  if (!confirm(`Cancel booking ${ref}? This cannot be undone.`)) return;
+  const res = await apiFetch(`/bookings/${id}/cancel`, {
+    method: 'PATCH',
+    body: { reason: 'Cancelled by guest' }
+  });
+  if (res?.success) {
+    showToast('Booking cancelled successfully', 'success');
+    _allBookings = _allBookings.map(b => b.id === id ? res.data : b);
+    filterBookings(_currentFilter);
+  } else {
+    showToast(res?.message || 'Cancellation failed', 'error');
+  }
+}
+
+function openPaymentModal(bookingId, ref, balance) {
+  document.getElementById('paymentModalBody').innerHTML = `
+    <div style="background:#f9fafb;border-radius:10px;padding:16px;margin-bottom:20px">
+      <div style="font-size:.78rem;color:var(--text-muted)">Booking</div>
+      <div style="font-weight:700;color:#92400e">${ref}</div>
+      <div style="font-size:.85rem;color:var(--text-muted);margin-top:4px">Balance due: <strong style="color:var(--dark)">${fmtPrice(balance)}</strong></div>
+    </div>
+    <div class="form-group">
+      <label>Payment Amount (₹)</label>
+      <input type="number" id="payAmt" class="form-input" value="${balance}" min="1" max="${balance}" step="100">
+    </div>
+    <div class="form-group">
+      <label>Payment Method</label>
+      <select id="payMethod" class="form-input">
+        <option value="UPI">📱 UPI (Google Pay / PhonePe / Paytm)</option>
+        <option value="CREDIT_CARD">💳 Credit Card</option>
+        <option value="DEBIT_CARD">💳 Debit Card</option>
+        <option value="NET_BANKING">🏦 Net Banking</option>
+        <option value="WALLET">👜 Wallet (Paytm / Amazon Pay)</option>
+        <option value="CASH">💵 Cash at Hotel</option>
+      </select>
+    </div>
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:.8rem;color:#1e40af;margin-bottom:16px">
+      💡 For a full payment experience with QR code and card entry, use the
+      <a href="payment.html?bookingId=${bookingId}&ref=${ref}" style="font-weight:700;color:#1d4ed8;text-decoration:underline">Payment Page →</a>
+    </div>
+    <div class="error-msg" id="payError"></div>
+    <button class="btn-auth" id="paySubmitBtn" onclick="submitPayment(${bookingId})">
+      Process Payment
+    </button>`;
+  document.getElementById('paymentModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePaymentModal() {
+  document.getElementById('paymentModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function submitPayment(bookingId) {
+  const btn    = document.getElementById('paySubmitBtn');
+  const errEl  = document.getElementById('payError');
+  errEl.style.display = 'none';
+  const amount = parseFloat(document.getElementById('payAmt').value);
+  const method = document.getElementById('payMethod').value;
+  if (!amount || amount <= 0) {
+    errEl.textContent = 'Please enter a valid payment amount.';
+    errEl.style.display = 'block'; return;
+  }
+  btnLoading(btn, true);
+  const res = await apiFetch('/payments/process', {
+    method: 'POST',
+    body: { bookingId, amount, paymentMethod: method, paymentType: 'BALANCE' }
+  });
+  if (res?.success) {
+    closePaymentModal();
+    showToast(`Payment of ${fmtPrice(amount)} successful! ✓`, 'success');
+    loadBookings();
+  } else {
+    errEl.textContent = res?.message || 'Payment failed.';
+    errEl.style.display = 'block';
+    btnLoading(btn, false);
+  }
+}
+
+function openServiceRequest(bookingId, ref) {
+  document.getElementById('modalTitle').textContent = 'Request a Service';
+  document.getElementById('modalBody').innerHTML = `
+    <div style="background:#fef3c7;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:.85rem;color:#92400e;font-weight:500">
+      Booking: ${ref}
+    </div>
+    <div class="form-group">
+      <label>Service Type</label>
+      <select id="modalSvcType" class="form-input">
+        <option value="ROOM_SERVICE">🍽️ Room Service</option>
+        <option value="LAUNDRY">👔 Laundry</option>
+        <option value="RESTAURANT">🍷 Restaurant Reservation</option>
+        <option value="HOUSEKEEPING">🧹 Housekeeping</option>
+        <option value="SPA">💆 Spa & Massage</option>
+        <option value="GYM">🏋️ Gym Access</option>
+        <option value="AIRPORT_TRANSFER">🚗 Airport Transfer</option>
+        <option value="CONCIERGE">🛎️ Concierge</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="modalSvcDesc" class="form-input" rows="3"
+        placeholder="Describe your request in detail…"></textarea>
+    </div>
+    <div class="error-msg" id="svcErr"></div>
+    <button class="btn-auth" id="svcBtn" onclick="submitSvcFromModal(${bookingId})">
+      Submit Request
+    </button>`;
+  openModal();
+}
+
+async function submitSvcFromModal(bookingId) {
+  const btn  = document.getElementById('svcBtn');
+  const err  = document.getElementById('svcErr');
+  const type = document.getElementById('modalSvcType').value;
+  const desc = document.getElementById('modalSvcDesc').value.trim();
+  if (!desc) { err.textContent = 'Please describe your request.'; err.style.display='block'; return; }
+  btnLoading(btn, true);
+  const res = await apiFetch('/services/request', {
+    method: 'POST',
+    body: { bookingId, serviceType: type, serviceDescription: desc }
+  });
+  if (res?.success) {
+    closeModal();
+    showToast('Service request submitted! 🛎️', 'success');
+  } else {
+    err.textContent = res?.message || 'Failed.';
+    err.style.display = 'block';
+    btnLoading(btn, false);
+  }
+}
+
+function showSpecialRequests(ref, requests) {
+  document.getElementById('modalTitle').textContent = 'Special Requests';
+  document.getElementById('modalBody').innerHTML = `
+    <div style="background:#fef3c7;border-radius:8px;padding:4px 12px;margin-bottom:16px;font-size:.8rem;color:#92400e;display:inline-block">${ref}</div>
+    <div style="background:#f9fafb;border-radius:10px;padding:16px;font-size:.88rem;color:#374151;line-height:1.7">${requests}</div>
+    <button class="btn-auth" style="margin-top:20px" onclick="closeModal()">Close</button>`;
+  openModal();
+}
+
+// Close payment modal on overlay click
+document.getElementById('paymentModal').addEventListener('click', function(e) {
+  if (e.target === this) closePaymentModal();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — Grand Hotel</title>
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+.services-hero-bg{
+  background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#1a1a2e 100%);
+}
+.service-detail-card{
+  background:#fff;border-radius:20px;
+  border:1px solid var(--border);
+  overflow:hidden;transition:all .3s ease;
+  cursor:pointer;
+}
+.service-detail-card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 20px 60px rgba(0,0,0,.12);
+  border-color:var(--gold);
+}
+.service-card-header{
+  height:180px;display:flex;align-items:center;
+  justify-content:center;position:relative;
+  overflow:hidden;
+}
+.service-card-body{padding:24px}
+.service-card-body h3{
+  font-size:1.1rem;font-weight:700;
+  color:var(--dark);margin-bottom:8px;
+}
+.service-card-body p{
+  font-size:.86rem;color:var(--text-muted);
+  line-height:1.7;margin-bottom:16px;
+}
+.service-price-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#fef3c7;color:#92400e;
+  border:1px solid #fde68a;
+  padding:5px 14px;border-radius:100px;
+  font-size:.78rem;font-weight:600;
+}
+.service-features{
+  display:flex;flex-direction:column;gap:6px;
+  margin-top:14px;
+}
+.service-feature{
+  display:flex;align-items:center;gap:8px;
+  font-size:.82rem;color:var(--text-muted);
+}
+.service-feature::before{
+  content:'✓';color:#10b981;font-weight:700;
+  flex-shrink:0;
+}
+.process-steps{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:0;position:relative;
+  counter-reset:steps;
+}
+.process-steps::before{
+  content:'';position:absolute;
+  top:28px;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#c9a84c,#f0d080,#c9a84c);
+  z-index:0;
+}
+.step{
+  text-align:center;padding:0 20px;
+  position:relative;z-index:1;
+  counter-increment:steps;
+}
+.step-num{
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  color:#1a0a00;font-weight:800;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+  border:3px solid #fff;
+  box-shadow:0 0 0 3px var(--gold);
+}
+.step h4{font-size:.95rem;font-weight:600;color:var(--dark);margin-bottom:6px}
+.step p{font-size:.82rem;color:var(--text-muted);line-height:1.5}
+.request-cta{
+  background:linear-gradient(135deg,#0f0c29 0%,#302b63 100%);
+  border-radius:24px;padding:60px;
+  text-align:center;color:#fff;
+  position:relative;overflow:hidden;
+}
+.request-cta::before{
+  content:'';position:absolute;
+  width:400px;height:400px;border-radius:50%;
+  background:rgba(201,168,76,.08);
+  top:-100px;right:-100px;
+}
+.request-cta h2{
+  font-family:'Playfair Display',serif;
+  font-size:2rem;font-weight:700;margin-bottom:12px;
+}
+.request-cta p{color:rgba(255,255,255,.7);margin-bottom:28px;font-size:.95rem}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-icon">⬡</span><span>Grand<strong>Hotel</strong></span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="rooms.html">Rooms</a></li>
+      <li><a href="services.html" class="active">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn-outline">Sign In</a>
+      <a href="register.html" class="btn-primary">Book Now</a>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- Page Hero -->
+<section class="page-hero services-hero-bg">
+  <div class="container">
+    <h1>Hotel Services</h1>
+    <p>World-class amenities designed to make every moment of your stay exceptional</p>
+  </div>
+</section>
+
+<!-- Services Grid -->
+<section style="padding:80px 0;background:#f9fafb">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">What We Offer</span>
+      <h2>Premium Services at Your Fingertips</h2>
+      <p>Available 24/7 — simply request from your room or through our app</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px">
+
+      <!-- Room Service -->
+      <div class="service-detail-card">
+        <div class="service-card-header"
+          style="background:linear-gradient(135deg,#1a1a2e,#302b63)">
+          <div style="text-align:center">
+            <div style="font-size:3.5rem;margin-bottom:8px">🍽️</div>
+            <div style="color:rgba(255,255,255,.7);font-size:.8rem;letter-spacing:.5px">AVAILABLE 24/7</div>
+          </div>
+        </div>
+        <div class="service-card-body">
+          <h3>In-Room Dining</h3>
+          <p>Enjoy our gourmet menu from the comfort of your room. Freshly prepared by our executive chefs and delivered within 30 minutes.</p>
+          <div class="service-price-tag">From ₹500 per order</div>
+          <div class="service-features">
+            <div class="service-feature">Full restaurant menu available</div>
+            <div class="service-feature">30-minute delivery guarantee</div>
+            <div class="service-feature">Special dietary options</div>
+            <div class="service-feature">Wine & beverage pairing</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Laundry -->
+      <div class="service-detail-card">
+        <div class="service-card-header"
+          style="background:linear-gradient(135deg,#134e5e,#71b280)">
+          <div style="text-align:center">
+            <div style="font-size:3.5rem;margin-bottom:8px">👔</div>
+            <div style="color:rgba(255,255,255,.7);font-size:.8rem;letter-spacing:.5px">EXPRESS IN 4 HOURS</div>
+          </div>
+        </div>
+        <div class="service-card-body">
+          <h3>Laundry & Dry Cleaning</h3>
+          <p>Professional laundry, dry cleaning and pressing services. Express turnaround available for last-minute needs.</p>
+          <div class="service-price-tag">From ₹200 per item</div>
+          <div class="service-features">
+            <div class="service-feature">Standard 24-hour service</div>
+            <div class="service-feature">Express 4-hour option</div>
+            <div class="service-feature">Dry cleaning & pressing</div>
+            <div class="service-feature">Garment protection</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spa -->
+      <div class="service-detail-card">
+        <div class="service-card-header"
+          style="background:linear-gradient(135deg,#c94b4b,#4b134f)">
+          <div style="text-align:center">
+            <div style="font-size:3.5rem;margin-bottom:8px">💆</div>
+            <div style="color:rgba(255,255,255,.7);font-size:.8rem;letter-spacing:.5px">BOOK IN ADVANCE</div>
+          </div>
+        </div>
+        <div class="service-card-body">
+          <h3>Spa & Wellness</h3>
+          <p>Rejuvenate your body and mind with our signature treatments. From aromatherapy to deep tissue massage by expert therapists.</p>
+          <div class="service-price-tag">From ₹1,500 per session</div>
+          <div class="service-features">
+            <div class="service-feature">Swedish & deep tissue massage</div>
+            <div class="service-feature">Aromatherapy treatments</div>
+            <div class="service-feature">Facial & skin care</div>
+            <div class="service-feature">Couples spa packages</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Airport Transfer -->
+      <div class="service-detail-card">
+        <div class="service-card-header"
+          style="background:linear-gradient(135deg,#373b44,#4286f4)">
+          <div style="text-align:center">
+            <div style="font-size:3.5rem;margin-bottom:8px">🚗</div>
+            <div style="color:rgba(255,255,255,.7);font-size:.8rem;letter-spacing:.5px">COMPLIMENTARY FOR SUITES</div>
+          </div>
+        </div>
+        <div class="service-card-body">
+          <h3>Airport Transfer</h3>
+          <p>Arrive and depart in style. Our luxury fleet of vehicles ensures a comfortable journey between the hotel and airport.</p>
+          <div class="service-price-tag">From ₹1,200 one way</div>
+          <div class="service-features">
+            <div class="service-feature">Luxury sedans & SUVs</div>
+            <div class="service-feature">Flight tracking included</div>
+            <div class="service-feature">Meet & greet service</div>
+            <div class="service-feature">Complimentary for Presidential Suite</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gym -->
+      <div class="service-detail-card">
+        <div class="service-card-header"
+          style="background:linear-gradient(135deg,#2c3e50,#4ca1af)">
+          <div style="text-align:center">
+            <div style="font-size:3.5rem;margin-bottom:8px">🏋️</div>
+            <div style="color:rgba(255,255,255,.7);font-size:.8rem;letter-spacing:.5px">OPEN 24 HOURS</div>
+          </div>
+        </div>
+        <div class="service-card-body">
+          <h3>Fitness Center</h3>
+          <p>Stay on top of your fitness regime with our state-of-the-art gymnasium featuring the latest equipment and personal trainers.</p>
+          <div class="service-price-tag">Complimentary for guests</div>
+          <div class="service-features">
+            <div class="service-feature">Cardio & strength equipment</div>
+            <div class="service-feature">Personal trainer sessions</div>
+            <div class="service-feature">Yoga & pilates classes</div>
+            <div class="service-feature">Steam room & sauna</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Concierge -->
+      <div class="service-detail-card">
+        <div class="service-card-header"
+          style="background:linear-gradient(135deg,#c9a84c,#e8c870)">
+          <div style="text-align:center">
+            <div style="font-size:3.5rem;margin-bottom:8px">🛎️</div>
+            <div style="color:rgba(0,0,0,.5);font-size:.8rem;letter-spacing:.5px">ALWAYS AVAILABLE</div>
+          </div>
+        </div>
+        <div class="service-card-body">
+          <h3>Concierge Services</h3>
+          <p>Your personal concierge is available around the clock to assist with restaurant reservations, tours, tickets and any special requests.</p>
+          <div class="service-price-tag">Complimentary</div>
+          <div class="service-features">
+            <div class="service-feature">Restaurant reservations</div>
+            <div class="service-feature">City tours & sightseeing</div>
+            <div class="service-feature">Event tickets & shows</div>
+            <div class="service-feature">Business services</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Restaurant -->
+      <div class="service-detail-card">
+        <div class="service-card-header"
+          style="background:linear-gradient(135deg,#1a0a2e,#4a1060)">
+          <div style="text-align:center">
+            <div style="font-size:3.5rem;margin-bottom:8px">🍷</div>
+            <div style="color:rgba(255,255,255,.7);font-size:.8rem;letter-spacing:.5px">3 VENUES ON-SITE</div>
+          </div>
+        </div>
+        <div class="service-card-body">
+          <h3>Fine Dining Restaurant</h3>
+          <p>Three exquisite dining venues — from our signature fine dining restaurant to the rooftop bar with panoramic city views.</p>
+          <div class="service-price-tag">Reservation recommended</div>
+          <div class="service-features">
+            <div class="service-feature">Award-winning executive chef</div>
+            <div class="service-feature">Extensive wine cellar</div>
+            <div class="service-feature">Private dining room</div>
+            <div class="service-feature">Breakfast, lunch & dinner</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Housekeeping -->
+      <div class="service-detail-card">
+        <div class="service-card-header"
+          style="background:linear-gradient(135deg,#0a1628,#2a4068)">
+          <div style="text-align:center">
+            <div style="font-size:3.5rem;margin-bottom:8px">🧹</div>
+            <div style="color:rgba(255,255,255,.7);font-size:.8rem;letter-spacing:.5px">DAILY SERVICE</div>
+          </div>
+        </div>
+        <div class="service-card-body">
+          <h3>Housekeeping</h3>
+          <p>Daily housekeeping ensures your room is always pristine. Request additional cleaning, fresh towels or turndown service anytime.</p>
+          <div class="service-price-tag">Complimentary</div>
+          <div class="service-features">
+            <div class="service-feature">Daily room cleaning</div>
+            <div class="service-feature">Evening turndown service</div>
+            <div class="service-feature">Fresh linen on request</div>
+            <div class="service-feature">Eco-friendly products</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section style="padding:80px 0;background:#fff">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Process</span>
+      <h2>How to Request a Service</h2>
+      <p>Requesting a service is simple and takes less than a minute</p>
+    </div>
+    <div class="process-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Sign In</h4>
+        <p>Log in to your guest account to access all hotel services</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Select Service</h4>
+        <p>Choose from our wide range of available services</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Add Details</h4>
+        <p>Describe exactly what you need and any special requirements</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Sit Back</h4>
+        <p>Our team will confirm and fulfil your request promptly</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:80px 0;background:#f9fafb">
+  <div class="container">
+    <div class="request-cta">
+      <h2>Ready to Experience Our Services?</h2>
+      <p>Sign in to your account and request any service instantly from your dashboard</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <a href="login.html" class="btn-gold">Sign In to Request</a>
+        <a href="register.html" class="btn-white-outline">Create Account</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">⬡ Grand<strong>Hotel</strong></div>
+        <p>Experience the pinnacle of luxury hospitality.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="#">Room Service</a></li>
+          <li><a href="#">Laundry</a></li>
+          <li><a href="#">Spa & Wellness</a></li>
+          <li><a href="#">Airport Transfer</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="rooms.html">Rooms</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="login.html">Sign In</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <ul class="contact-list">
+          <li>📍 123 Palace Road, Mumbai</li>
+          <li>📞 +91 22 1234 5678</li>
+          <li>✉️ stay@grandhotel.com</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 GrandHotel. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    updateNavAuth();
+  });
+</script>
+</body>
+</html>

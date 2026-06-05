@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Room — Grand Hotel</title>
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+.booking-layout{
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:32px;
+  padding:48px 0;
+}
+.booking-form-card{
+  background:#fff;border-radius:20px;
+  border:1px solid var(--border);padding:36px;
+}
+.booking-form-card h2{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;font-weight:700;
+  color:var(--dark);margin-bottom:6px;
+}
+.booking-form-card > p{
+  color:var(--text-muted);font-size:.87rem;margin-bottom:28px;
+}
+.booking-step{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 0;border-bottom:1px solid #f3f4f6;
+  margin-bottom:0;
+}
+.step-num-sm{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--dark);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;flex-shrink:0;
+}
+.booking-step h4{font-size:.9rem;font-weight:600;color:var(--dark)}
+.booking-step p{font-size:.8rem;color:var(--text-muted)}
+/* Sticky Summary Card */
+.summary-card{
+  background:#fff;border-radius:20px;
+  border:1px solid var(--border);padding:28px;
+  position:sticky;top:90px;height:fit-content;
+}
+.summary-card h3{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;font-weight:700;margin-bottom:20px;
+  padding-bottom:16px;border-bottom:1px solid var(--border);
+}
+.summary-room-preview{
+  height:140px;border-radius:12px;
+  overflow:hidden;margin-bottom:16px;position:relative;
+}
+.summary-line{
+  display:flex;justify-content:space-between;
+  align-items:center;font-size:.84rem;
+  padding:8px 0;border-bottom:1px solid #f3f4f6;
+}
+.summary-line:last-of-type{border-bottom:none}
+.summary-line label{color:var(--text-muted)}
+.summary-line span{font-weight:500;color:var(--dark)}
+.summary-total{
+  margin-top:16px;padding-top:16px;
+  border-top:2px solid var(--dark);
+  display:flex;justify-content:space-between;
+  align-items:center;
+}
+.summary-total label{font-size:.9rem;font-weight:600;color:var(--dark)}
+.summary-total span{font-size:1.4rem;font-weight:800;color:var(--dark)}
+.progress-steps{
+  display:flex;align-items:center;gap:0;
+  margin-bottom:32px;
+}
+.p-step{
+  flex:1;text-align:center;
+  font-size:.75rem;font-weight:600;
+  color:#9ca3af;
+  position:relative;
+}
+.p-step.active{color:var(--dark)}
+.p-step.done{color:#10b981}
+.p-step-circle{
+  width:30px;height:30px;border-radius:50%;
+  border:2px solid #e5e7eb;
+  background:#fff;color:#9ca3af;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;
+  margin:0 auto 6px;
+}
+.p-step.active .p-step-circle{
+  border-color:var(--dark);background:var(--dark);color:#fff;
+}
+.p-step.done .p-step-circle{
+  border-color:#10b981;background:#10b981;color:#fff;
+}
+.p-step-line{
+  flex:1;height:2px;background:#e5e7eb;
+  margin-top:-16px;
+}
+.p-step-line.done{background:#10b981}
+@media(max-width:768px){
+  .booking-layout{grid-template-columns:1fr}
+  .summary-card{position:static}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-icon">⬡</span><span>Grand<strong>Hotel</strong></span>
+    </a>
+    <div class="nav-actions" id="navAuthArea"></div>
+  </div>
+</nav>
+
+<section class="page-hero" style="padding:100px 0 40px">
+  <div class="container">
+    <h1>Complete Your Booking</h1>
+    <p>Just a few details and your luxury stay is confirmed</p>
+  </div>
+</section>
+
+<div style="background:#f9fafb;min-height:60vh">
+  <div class="container">
+    <div class="booking-layout">
+
+      <!-- Form -->
+      <div>
+        <!-- Progress Steps -->
+        <div class="progress-steps" style="background:#fff;border-radius:12px;padding:20px;border:1px solid var(--border);margin-bottom:24px">
+          <div class="p-step done" id="ps1">
+            <div class="p-step-circle">✓</div>
+            Select Room
+          </div>
+          <div class="p-step-line done"></div>
+          <div class="p-step active" id="ps2">
+            <div class="p-step-circle">2</div>
+            Your Details
+          </div>
+          <div class="p-step-line" id="pl2"></div>
+          <div class="p-step" id="ps3">
+            <div class="p-step-circle">3</div>
+            Payment
+          </div>
+          <div class="p-step-line" id="pl3"></div>
+          <div class="p-step" id="ps4">
+            <div class="p-step-circle">4</div>
+            Confirmed
+          </div>
+        </div>
+
+        <div class="booking-form-card" id="stepDetailsCard">
+          <h2>Stay Details</h2>
+          <p>When are you arriving and how many guests will be staying?</p>
+
+          <div class="error-msg" id="bookingError"></div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Check-In Date *</label>
+              <input type="date" id="checkIn" class="form-input" onchange="calcSummary()">
+            </div>
+            <div class="form-group">
+              <label>Check-Out Date *</label>
+              <input type="date" id="checkOut" class="form-input" onchange="calcSummary()">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Number of Guests *</label>
+              <select id="guests" class="form-input" onchange="calcSummary()">
+                <option value="1">1 Guest</option>
+                <option value="2" selected>2 Guests</option>
+                <option value="3">3 Guests</option>
+                <option value="4">4 Guests</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Payment Method *</label>
+              <select id="payMethod" class="form-input">
+                <option value="CASH">Cash at Check-in</option>
+                <option value="UPI">UPI</option>
+                <option value="CREDIT_CARD">Credit Card</option>
+                <option value="DEBIT_CARD">Debit Card</option>
+                <option value="NET_BANKING">Net Banking</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Advance Payment (₹) <span style="font-weight:400;color:#e53e3e">— required to confirm booking</span></label>
+            <input type="number" id="advPay" class="form-input" placeholder="Enter advance amount (₹)" min="1" step="100" oninput="calcSummary()" required>
+          </div>
+
+          <div class="form-group">
+            <label>Special Requests <span style="font-weight:400;color:#9ca3af">— optional</span></label>
+            <textarea id="requests" class="form-input" rows="3"
+              placeholder="Early check-in, high floor, extra pillows, dietary requirements, anniversary setup…"></textarea>
+          </div>
+
+          <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px 16px;margin-bottom:24px;font-size:.83rem;color:#92400e;line-height:1.6">
+            ✓ <strong>Free cancellation</strong> up to 48 hours before check-in<br>
+            ✓ <strong>Best rate guarantee</strong> — book direct and save<br>
+            ✓ Instant email confirmation
+          </div>
+
+          <button class="btn-auth" id="proceedBtn" onclick="proceedToPayment()">
+            Proceed to Confirm →
+          </button>
+        </div>
+
+        <!-- Confirmation Card (shown after submit) -->
+        <div class="booking-form-card" id="confirmationCard" style="display:none;text-align:center">
+          <div style="font-size:4rem;margin-bottom:20px">🎉</div>
+          <h2 style="margin-bottom:8px">Booking Confirmed!</h2>
+          <p style="color:var(--text-muted);margin-bottom:24px">
+            Your reservation is confirmed. A confirmation email has been sent to your inbox.
+          </p>
+          <div style="background:#f9fafb;border-radius:12px;padding:20px;margin-bottom:24px;text-align:left">
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+              <span style="font-size:.8rem;color:var(--text-muted)">Booking Reference</span>
+              <span id="confRef" style="font-family:monospace;font-weight:700;color:#92400e;font-size:.9rem">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+              <span style="font-size:.8rem;color:var(--text-muted)">Room</span>
+              <span id="confRoom" style="font-weight:600;font-size:.88rem">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+              <span style="font-size:.8rem;color:var(--text-muted)">Check-In</span>
+              <span id="confCheckIn" style="font-weight:600;font-size:.88rem">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+              <span style="font-size:.8rem;color:var(--text-muted)">Check-Out</span>
+              <span id="confCheckOut" style="font-weight:600;font-size:.88rem">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:.8rem;color:var(--text-muted)">Total Amount</span>
+              <span id="confAmount" style="font-weight:700;font-size:1rem;color:var(--dark)">—</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <a href="my-bookings.html" class="btn-auth" style="display:inline-block;padding:12px 28px">
+              View My Bookings
+            </a>
+            <a href="rooms.html"
+              style="display:inline-block;padding:12px 28px;border:1.5px solid var(--border);border-radius:10px;font-weight:600;font-size:.9rem;color:var(--dark)">
+              Book Another Room
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky Summary -->
+      <div>
+        <div class="summary-card" id="summaryCard">
+          <h3>Booking Summary</h3>
+
+          <!-- Room preview -->
+          <div class="summary-room-preview" id="summaryRoomPreview">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e,#302b63);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-size:.85rem">
+              Select a room
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px">
+            <div style="font-size:.72rem;color:var(--gold-dark);font-weight:600;text-transform:uppercase;letter-spacing:.5px" id="sumRoomType">—</div>
+            <div style="font-weight:700;color:var(--dark);margin-top:2px" id="sumRoomName">Select a room to continue</div>
+            <div style="font-size:.8rem;color:var(--text-muted)" id="sumRoomDetail">—</div>
+          </div>
+
+          <div class="summary-line">
+            <label>Check-In</label>
+            <span id="sumCheckIn">—</span>
+          </div>
+          <div class="summary-line">
+            <label>Check-Out</label>
+            <span id="sumCheckOut">—</span>
+          </div>
+          <div class="summary-line">
+            <label>Duration</label>
+            <span id="sumNights">—</span>
+          </div>
+          <div class="summary-line">
+            <label>Guests</label>
+            <span id="sumGuests">—</span>
+          </div>
+          <div class="summary-line">
+            <label>Rate/Night</label>
+            <span id="sumRate">—</span>
+          </div>
+          <div class="summary-line">
+            <label>Advance Paid</label>
+            <span id="sumAdvance" style="color:#10b981">₹0</span>
+          </div>
+          <div class="summary-line" id="sumBalanceLine">
+            <label>Balance Due</label>
+            <span id="sumBalance" style="color:#ef4444">—</span>
+          </div>
+
+          <div class="summary-total">
+            <label>Total</label>
+            <span id="sumTotal">—</span>
+          </div>
+
+          <div style="margin-top:16px;padding:12px;background:#f0fdf4;border-radius:8px;font-size:.78rem;color:#166534;line-height:1.5">
+            🔒 Secure booking · Free cancellation<br>
+            Best rate guarantee
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0">
+      <p>© 2024 GrandHotel. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="../index.html">Home</a>
+        <a href="rooms.html">Rooms</a>
+        <a href="contact.html">Help</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script src="../js/rooms-data.js"></script>
+<script>
+let currentRoom = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+  updateNavAuth();
+
+  const params = new URLSearchParams(window.location.search);
+  const roomId = parseInt(params.get('roomId'));
+  const today  = new Date().toISOString().split('T')[0];
+
+  document.getElementById('checkIn').min  = today;
+  document.getElementById('checkOut').min = today;
+  // Set max date to 1 year from today to prevent invalid year input
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() + 1);
+  const maxDateStr = maxDate.toISOString().split('T')[0];
+  document.getElementById('checkIn').max  = maxDateStr;
+  document.getElementById('checkOut').max = maxDateStr;
+
+  // Pre-fill dates if passed
+  if (params.get('checkIn'))  document.getElementById('checkIn').value  = params.get('checkIn');
+  if (params.get('checkOut')) document.getElementById('checkOut').value = params.get('checkOut');
+
+  if (roomId) {
+    // Fetch room from API to get real database ID and data
+    try {
+      const res = await fetch(`http://localhost:8080/api/rooms/${roomId}`, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (data && data.data) {
+        const r = data.data;
+        const typeUpper = (r.roomType || '').toUpperCase();
+        const typeImages = {
+          SINGLE:'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80',
+          DOUBLE:'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80',
+          TWIN:'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=600&q=80',
+          DELUXE:'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80',
+          FAMILY:'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=600&q=80',
+          SUITE:'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=600&q=80',
+          STUDIO:'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=600&q=80',
+          PRESIDENTIAL:'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=600&q=80'
+        };
+        const bgMap = {SINGLE:'ri-single',DOUBLE:'ri-double',TWIN:'ri-double',DELUXE:'ri-deluxe',FAMILY:'ri-family',SUITE:'ri-suite',STUDIO:'ri-studio',PRESIDENTIAL:'ri-presidential'};
+        currentRoom = {
+          id:       r.id,
+          number:   r.roomNumber,
+          type:     r.roomType ? r.roomType.charAt(0) + r.roomType.slice(1).toLowerCase() : '',
+          name:     r.roomType ? r.roomType.charAt(0) + r.roomType.slice(1).toLowerCase() + ' Room' : 'Room ' + r.roomNumber,
+          desc:     r.description || '',
+          price:    parseFloat(r.pricePerNight) || 0,
+          capacity: r.capacity || 1,
+          floor:    r.floorNumber || 1,
+          size:     r.roomSize || 0,
+          image:    (r.images && r.images.length > 0) ? r.images[0] : (typeImages[typeUpper] || null),
+          bg:       bgMap[typeUpper] || 'ri-single'
+        };
+        updateSummaryRoom();
+        calcSummary();
+        const sel = document.getElementById('guests');
+        sel.innerHTML = [...Array(currentRoom.capacity)].map((_, i) =>
+          `<option value="${i+1}">${i+1} Guest${i > 0 ? 's' : ''}</option>`).join('');
+      } else {
+        // API returned no data — fallback to local ROOMS array
+        loadRoomFromLocal(roomId);
+      }
+    } catch(e) {
+      // API unreachable — fallback to local ROOMS array
+      loadRoomFromLocal(roomId);
+    }
+  }
+});
+
+function loadRoomFromLocal(roomId) {
+  // Try to find room in local ROOMS array (rooms-data.js)
+  const localRoom = (typeof ROOMS !== 'undefined') ? ROOMS.find(r => r.id === roomId) : null;
+  if (localRoom) {
+    const typeUpper = (localRoom.type || '').toUpperCase();
+    const bgMap = {SINGLE:'ri-single',DOUBLE:'ri-double',TWIN:'ri-double',DELUXE:'ri-deluxe',FAMILY:'ri-family',SUITE:'ri-suite',STUDIO:'ri-studio',PRESIDENTIAL:'ri-presidential'};
+    currentRoom = {
+      id:       localRoom.id,
+      number:   localRoom.number,
+      type:     localRoom.type || '',
+      name:     localRoom.name || ('Room ' + localRoom.number),
+      desc:     localRoom.desc || '',
+      price:    parseFloat(localRoom.price) || 0,
+      capacity: localRoom.capacity || 1,
+      floor:    localRoom.floor || 1,
+      size:     localRoom.size || 0,
+      image:    localRoom.image || null,
+      bg:       bgMap[typeUpper] || 'ri-single'
+    };
+    updateSummaryRoom();
+    calcSummary();
+    const sel = document.getElementById('guests');
+    sel.innerHTML = [...Array(currentRoom.capacity)].map((_, i) =>
+      `<option value="${i+1}">${i+1} Guest${i > 0 ? 's' : ''}</option>`).join('');
+  } else {
+    document.getElementById('bookingError').textContent = 'Room not found. Please go back and select a room.';
+    document.getElementById('bookingError').style.display = 'block';
+  }
+}
+
+function updateSummaryRoom() {
+  if (!currentRoom) return;
+  const preview = document.getElementById('summaryRoomPreview');
+  preview.innerHTML = `
+    <div class="room-img-inner ${currentRoom.bg}" style="width:100%;height:100%;position:relative;overflow:hidden">
+      <div class="window" style="left:30px"></div>
+      <div class="window" style="right:30px"></div>
+    </div>`;
+  document.getElementById('sumRoomType').textContent   = currentRoom.type;
+  document.getElementById('sumRoomName').textContent   = currentRoom.name;
+  document.getElementById('sumRoomDetail').textContent =
+    `Room ${currentRoom.number} · Floor ${currentRoom.floor} · ${currentRoom.size} sq ft`;
+  document.getElementById('sumRate').textContent = fmtPrice(currentRoom.price);
+}
+
+function calcSummary() {
+  const ci  = document.getElementById('checkIn').value;
+  const co  = document.getElementById('checkOut').value;
+  // Validate year to prevent garbage like year 0006
+  const ciYear = ci ? parseInt(ci.split('-')[0]) : 0;
+  const coYear = co ? parseInt(co.split('-')[0]) : 0;
+  const currentYear = new Date().getFullYear();
+  if (ci && (ciYear < currentYear || ciYear > currentYear + 1)) {
+    document.getElementById('bookingError').textContent = 'Please enter a valid check-in year (' + currentYear + ' or ' + (currentYear+1) + ').';
+    document.getElementById('bookingError').style.display = 'block';
+    document.getElementById('proceedBtn').disabled = true;
+    return;
+  }
+  if (co && (coYear < currentYear || coYear > currentYear + 1)) {
+    document.getElementById('bookingError').textContent = 'Please enter a valid check-out year (' + currentYear + ' or ' + (currentYear+1) + ').';
+    document.getElementById('bookingError').style.display = 'block';
+    document.getElementById('proceedBtn').disabled = true;
+    return;
+  }
+  const g   = document.getElementById('guests').value;
+  const adv = parseFloat(document.getElementById('advPay')?.value) || 0;
+
+  document.getElementById('sumGuests').textContent = `${g} Guest${g > 1 ? 's' : ''}`;
+
+  if (!ci) { document.getElementById('sumCheckIn').textContent = '—'; return; }
+  document.getElementById('sumCheckIn').textContent  = fmtDate(ci);
+
+  if (!co) { document.getElementById('sumCheckOut').textContent = '—'; return; }
+  document.getElementById('sumCheckOut').textContent = fmtDate(co);
+
+  if (!currentRoom) return;
+
+  const nights = Math.round((new Date(co + 'T00:00:00') - new Date(ci + 'T00:00:00')) / 86400000);
+  if (nights <= 0) return;
+  const bookingErr = document.getElementById('bookingError');
+  if (nights > 90) {
+    bookingErr.textContent = 'Booking duration cannot exceed 90 days. Please select a shorter stay.';
+    bookingErr.style.display = 'block';
+    document.getElementById('proceedBtn').disabled = true;
+    return;
+  } else {
+    bookingErr.style.display = 'none';
+    document.getElementById('proceedBtn').disabled = false;
+  }
+
+  const total   = nights * currentRoom.price;
+  const balance = Math.max(0, total - adv);
+
+  document.getElementById('sumNights').textContent  = `${nights} night${nights > 1 ? 's' : ''}`;
+  document.getElementById('sumTotal').textContent   = fmtPrice(total);
+  document.getElementById('sumAdvance').textContent = fmtPrice(adv);
+  document.getElementById('sumBalance').textContent = fmtPrice(balance);
+}
+
+async function proceedToPayment() {
+  const btn  = document.getElementById('proceedBtn');
+  const err  = document.getElementById('bookingError');
+  err.style.display = 'none';
+
+  if (!currentRoom) { err.textContent = 'No room selected. Please go back and select a room.'; err.style.display='block'; return; }
+
+  const checkInDate  = document.getElementById('checkIn').value;
+  const checkOutDate = document.getElementById('checkOut').value;
+  const guests       = parseInt(document.getElementById('guests').value);
+  const payMethod    = document.getElementById('payMethod').value;
+  const advance      = parseFloat(document.getElementById('advPay').value) || 0;
+  const requests     = document.getElementById('requests').value.trim();
+
+  if (!checkInDate)  { err.textContent='Please select a check-in date.';  err.style.display='block'; return; }
+  if (!checkOutDate) { err.textContent='Please select a check-out date.';  err.style.display='block'; return; }
+  if (advance <= 0) { err.textContent='Advance payment is required to confirm booking.'; err.style.display='block'; return; }
+  if (new Date(checkOutDate) <= new Date(checkInDate)) {
+    err.textContent='Check-out must be after check-in.'; err.style.display='block'; return;
+  }
+
+  btnLoading(btn, true);
+  try {
+    const res = await apiFetch('/bookings/create', {
+      method: 'POST',
+      body: {
+        roomId: currentRoom.id,
+        checkInDate, checkOutDate,
+        numberOfGuests: guests,
+        paymentMethod: payMethod,
+        advancePayment: advance,
+        specialRequests: requests || null
+      }
+    });
+
+    if (res?.success) {
+      const b = res.data;
+      // Update progress steps — step 2 done, redirect to payment
+      const ps2 = document.getElementById('ps2');
+      ps2.classList.remove('active'); ps2.classList.add('done');
+      ps2.querySelector('.p-step-circle').textContent = '✓';
+      document.getElementById('pl2')?.classList.add('done');
+      document.getElementById('ps3')?.classList.add('active');
+
+      showToast(`Booking ${b.bookingReference} created! Redirecting to payment... 💳`, 'success');
+
+      // Redirect to payment page after short delay
+      setTimeout(() => {
+        window.location.href = `payment.html?bookingId=${b.id}&ref=${b.bookingReference}`;
+      }, 1200);
+    } else {
+      err.textContent = res?.message || 'Booking failed. Please try again.';
+      err.style.display = 'block';
+      btnLoading(btn, false);
+    }
+  } catch (e) {
+    err.textContent = 'Connection failed. Please check if the server is running.';
+    err.style.display = 'block';
+    btnLoading(btn, false);
+  }
+}
+</script>
+</body>
+</html>

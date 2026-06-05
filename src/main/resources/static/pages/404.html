@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Page Not Found | Grand Hotel</title>
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-icon">⬡</span><span>Grand<strong>Hotel</strong></span>
+    </a>
+    <div class="nav-actions">
+      <a href="../index.html" class="btn-primary">Back to Home</a>
+    </div>
+  </div>
+</nav>
+
+<div style="min-height:100vh;background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#1a1a2e 100%);display:flex;align-items:center;justify-content:center;padding:100px 20px 40px;text-align:center;position:relative;overflow:hidden">
+
+  <!-- Background shapes -->
+  <div style="position:absolute;inset:0">
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="shape s3"></div>
+  </div>
+
+  <div style="position:relative;z-index:1;max-width:520px">
+    <!-- Big 404 -->
+    <div style="font-family:'Playfair Display',serif;font-size:clamp(6rem,15vw,10rem);font-weight:700;line-height:1;background:linear-gradient(135deg,#c9a84c,#f0d080,#c9a84c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px">
+      404
+    </div>
+
+    <h1 style="color:#fff;font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:600;margin-bottom:12px">
+      Room Not Found
+    </h1>
+
+    <p style="color:rgba(255,255,255,.65);font-size:1rem;line-height:1.7;margin-bottom:36px">
+      The page you're looking for seems to have checked out. Let our concierge guide you back to where you need to be.
+    </p>
+
+    <!-- Quick links -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+      <a href="../index.html"
+        style="padding:14px;background:var(--gold);color:#1a0a00;border-radius:10px;font-weight:700;font-size:.88rem;transition:.2s"
+        onmouseover="this.style.background='#f0d080'" onmouseout="this.style.background='var(--gold)'">
+        🏨 Back to Home
+      </a>
+      <a href="rooms.html"
+        style="padding:14px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;font-weight:600;font-size:.88rem;transition:.2s"
+        onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+        🛏️ Browse Rooms
+      </a>
+      <a href="contact.html"
+        style="padding:14px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;font-weight:600;font-size:.88rem;transition:.2s"
+        onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+        📩 Contact Us
+      </a>
+      <a href="login.html"
+        style="padding:14px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;font-weight:600;font-size:.88rem;transition:.2s"
+        onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+        🔑 Sign In
+      </a>
+    </div>
+
+    <p style="color:rgba(255,255,255,.35);font-size:.78rem">
+      Grand Hotel · 123 Palace Road, Mumbai · support@grandhotel.com
+    </p>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

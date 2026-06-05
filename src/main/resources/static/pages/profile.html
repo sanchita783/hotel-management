@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile — Grand Hotel</title>
+<link rel="stylesheet" href="../css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+.profile-avatar-big{
+  width:100px;height:100px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;font-weight:800;color:#1a0a00;
+  margin:0 auto 16px;
+  border:4px solid #fff;
+  box-shadow:0 4px 20px rgba(201,168,76,.3);
+}
+.profile-card{
+  background:#fff;border-radius:20px;
+  border:1px solid var(--border);padding:32px;
+  margin-bottom:24px;
+}
+.profile-header-card{
+  text-align:center;padding:40px 32px;
+}
+.info-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid #f3f4f6;
+}
+.info-row:last-child{border-bottom:none}
+.info-row label{font-size:.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.info-row span{font-size:.9rem;color:var(--dark);font-weight:500}
+.verified-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#dcfce7;color:#166534;
+  border:1px solid #bbf7d0;
+  padding:3px 10px;border-radius:100px;
+  font-size:.72rem;font-weight:600;
+}
+.unverified-chip{
+  background:#fef2f2;color:#dc2626;
+  border:1px solid #fecaca;
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-icon">⬡</span><span>Grand<strong>Hotel</strong></span>
+    </a>
+    <div class="nav-actions" id="navAuthArea"></div>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>My Profile</h1>
+    <p>Manage your personal information and account settings</p>
+  </div>
+</section>
+
+<div style="padding:48px 0;background:#f9fafb;min-height:60vh">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:28px;max-width:960px;margin:0 auto">
+
+      <!-- Left: Profile card -->
+      <div>
+        <div class="profile-card profile-header-card">
+          <div class="profile-avatar-big" id="profileAvatar">?</div>
+          <h2 style="font-size:1.2rem;font-weight:700;color:var(--dark)" id="profileName">Loading…</h2>
+          <p style="color:var(--text-muted);font-size:.85rem;margin-top:4px" id="profileEmail">—</p>
+          <div style="margin-top:12px" id="profileRole"></div>
+        </div>
+
+        <div class="profile-card">
+          <h3 style="font-size:.9rem;font-weight:600;margin-bottom:16px">Account Info</h3>
+          <div class="info-row">
+            <label>Member Since</label>
+            <span id="memberSince">—</span>
+          </div>
+          <div class="info-row">
+            <label>Email Verified</label>
+            <span id="emailVerified">—</span>
+          </div>
+          <div class="info-row">
+            <label>Account Status</label>
+            <span id="accountStatus">—</span>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <h3 style="font-size:.9rem;font-weight:600;margin-bottom:16px">Quick Links</h3>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <a href="dashboard.html"
+              style="padding:10px 14px;background:#fef3c7;color:#92400e;border-radius:8px;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:8px">
+              📊 Dashboard
+            </a>
+            <a href="my-bookings.html"
+              style="padding:10px 14px;background:#dbeafe;color:#1e40af;border-radius:8px;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:8px">
+              📅 My Bookings
+            </a>
+            <a href="rooms.html"
+              style="padding:10px 14px;background:#dcfce7;color:#166534;border-radius:8px;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:8px">
+              🛏️ Browse Rooms
+            </a>
+            <button onclick="logout()"
+              style="padding:10px 14px;background:#fef2f2;color:#dc2626;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px">
+              🚪 Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Edit forms -->
+      <div>
+        <!-- Update Profile -->
+        <div class="profile-card">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">Personal Information</h3>
+          <p style="font-size:.84rem;color:var(--text-muted);margin-bottom:24px">Update your name, phone and address</p>
+
+          <div class="success-msg" id="profileSuccess"></div>
+          <div class="error-msg"   id="profileError"></div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name *</label>
+              <input type="text" id="pFirstName" class="form-input">
+            </div>
+            <div class="form-group">
+              <label>Last Name *</label>
+              <input type="text" id="pLastName" class="form-input">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="pEmail" class="form-input" disabled
+              style="background:#f9fafb;cursor:not-allowed;opacity:.7">
+            <span style="font-size:.75rem;color:var(--text-muted)">Email cannot be changed</span>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="pPhone" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" id="pAddress" class="form-input" placeholder="Your city or full address">
+          </div>
+          <button class="btn-auth" id="saveProfileBtn" onclick="saveProfile()" style="max-width:200px">
+            Save Changes
+          </button>
+        </div>
+
+        <!-- Change Password -->
+        <div class="profile-card">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">Change Password</h3>
+          <p style="font-size:.84rem;color:var(--text-muted);margin-bottom:24px">Use a strong password with uppercase, numbers and special characters</p>
+
+          <div class="success-msg" id="pwdSuccess"></div>
+          <div class="error-msg"   id="pwdError"></div>
+
+          <div class="form-group" style="position:relative">
+            <label>Current Password *</label>
+            <input type="password" id="curPwd" class="form-input" placeholder="Your current password">
+          </div>
+          <div class="form-group">
+            <label>New Password *</label>
+            <input type="password" id="newPwd" class="form-input"
+              placeholder="Min 8 chars, uppercase, number, special char"
+              oninput="checkPwdStrength(this.value)">
+          </div>
+          <div id="pwdStrengthBar" style="margin:-8px 0 16px;display:none">
+            <div style="display:flex;gap:4px;margin-bottom:4px">
+              <div id="psb1" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:.3s"></div>
+              <div id="psb2" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:.3s"></div>
+              <div id="psb3" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:.3s"></div>
+              <div id="psb4" style="flex:1;height:3px;border-radius:2px;background:#e5e7eb;transition:.3s"></div>
+            </div>
+            <span id="pwdStrLabel" style="font-size:.72rem;color:#6b7280"></span>
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password *</label>
+            <input type="password" id="confPwd" class="form-input" placeholder="Re-enter new password">
+          </div>
+          <button class="btn-auth" id="changePwdBtn" onclick="changePassword()" style="max-width:220px">
+            Update Password
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0">
+      <p>© 2024 GrandHotel. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (!requireAuth()) return;
+  updateNavAuth();
+  loadProfile();
+});
+
+async function loadProfile() {
+  const res = await apiFetch('/users/profile');
+  if (!res?.success) return;
+  const u = res.data;
+
+  const initials = `${u.firstName[0]}${u.lastName[0]}`.toUpperCase();
+  document.getElementById('profileAvatar').textContent = initials;
+  document.getElementById('profileName').textContent   = `${u.firstName} ${u.lastName}`;
+  document.getElementById('profileEmail').textContent  = u.email;
+  document.getElementById('profileRole').innerHTML     =
+    `<span style="background:${u.role==='ADMIN'?'#1a1a2e':'#fef3c7'};color:${u.role==='ADMIN'?'#c9a84c':'#92400e'};padding:4px 14px;border-radius:100px;font-size:.75rem;font-weight:700">${u.role}</span>`;
+  document.getElementById('memberSince').textContent   = fmtDate(u.createdAt);
+  document.getElementById('emailVerified').innerHTML   = u.emailVerified
+    ? '<span class="verified-chip">✓ Verified</span>'
+    : '<span class="verified-chip unverified-chip">✗ Not Verified</span>';
+  document.getElementById('accountStatus').innerHTML   = u.isActive
+    ? '<span class="verified-chip">Active</span>'
+    : '<span class="verified-chip unverified-chip">Inactive</span>';
+
+  document.getElementById('pFirstName').value = u.firstName || '';
+  document.getElementById('pLastName').value  = u.lastName  || '';
+  document.getElementById('pEmail').value     = u.email     || '';
+  document.getElementById('pPhone').value     = u.phone     || '';
+  document.getElementById('pAddress').value   = u.address   || '';
+}
+
+async function saveProfile() {
+  const btn  = document.getElementById('saveProfileBtn');
+  const err  = document.getElementById('profileError');
+  const suc  = document.getElementById('profileSuccess');
+  err.style.display = suc.style.display = 'none';
+
+  const firstName = document.getElementById('pFirstName').value.trim();
+  const lastName  = document.getElementById('pLastName').value.trim();
+  const phone     = document.getElementById('pPhone').value.trim();
+  const address   = document.getElementById('pAddress').value.trim();
+
+  if (!firstName || !lastName) {
+    err.textContent = 'First name and last name are required.';
+    err.style.display = 'block'; return;
+  }
+
+  btnLoading(btn, true);
+  const user = getUser();
+  const res  = await apiFetch(`/users/${user.id}/profile`, {
+    method: 'PUT',
+    body: { firstName, lastName, phone: phone || null, address: address || null }
+  });
+
+  if (res?.success) {
+    suc.textContent = '✓ Profile updated successfully!';
+    suc.style.display = 'block';
+    const stored = getUser();
+    stored.fullName = `${firstName} ${lastName}`;
+    localStorage.setItem('user', JSON.stringify(stored));
+    document.getElementById('profileName').textContent = stored.fullName;
+    document.getElementById('profileAvatar').textContent =
+      `${firstName[0]}${lastName[0]}`.toUpperCase();
+  } else {
+    err.textContent = res?.message || 'Update failed. Please try again.';
+    err.style.display = 'block';
+  }
+  btnLoading(btn, false);
+}
+
+async function changePassword() {
+  const btn  = document.getElementById('changePwdBtn');
+  const err  = document.getElementById('pwdError');
+  const suc  = document.getElementById('pwdSuccess');
+  err.style.display = suc.style.display = 'none';
+
+  const cur  = document.getElementById('curPwd').value;
+  const nw   = document.getElementById('newPwd').value;
+  const conf = document.getElementById('confPwd').value;
+
+  if (!cur || !nw || !conf) {
+    err.textContent = 'All fields are required.';
+    err.style.display = 'block'; return;
+  }
+  if (nw.length < 8) {
+    err.textContent = 'New password must be at least 8 characters.';
+    err.style.display = 'block'; return;
+  }
+  if (!/(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])/.test(nw)) {
+    err.textContent = 'Password must have uppercase, number and special character.';
+    err.style.display = 'block'; return;
+  }
+  if (nw !== conf) {
+    err.textContent = 'Passwords do not match.';
+    err.style.display = 'block'; return;
+  }
+
+  btnLoading(btn, true);
+  const user = getUser();
+  const res  = await apiFetch(`/users/${user.id}/change-password`, {
+    method: 'PUT',
+    body: { currentPassword: cur, newPassword: nw, confirmPassword: conf }
+  });
+
+  if (res?.success) {
+    suc.textContent = '✓ Password changed successfully! Please use the new password next time you sign in.';
+    suc.style.display = 'block';
+    document.getElementById('curPwd').value  = '';
+    document.getElementById('newPwd').value  = '';
+    document.getElementById('confPwd').value = '';
+  } else {
+    err.textContent = res?.message || 'Failed. Please check your current password.';
+    err.style.display = 'block';
+  }
+  btnLoading(btn, false);
+}
+
+function checkPwdStrength(v) {
+  const bar = document.getElementById('pwdStrengthBar');
+  if (!v) { bar.style.display = 'none'; return; }
+  bar.style.display = 'block';
+  let score = 0;
+  if (v.length >= 8)        score++;
+  if (/[A-Z]/.test(v))      score++;
+  if (/[0-9]/.test(v))      score++;
+  if (/[@$!%*?&]/.test(v))  score++;
+  const colors = ['#ef4444','#f59e0b','#3b82f6','#10b981'];
+  const labels = ['Weak','Fair','Good','Strong'];
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('psb'+i).style.background =
+      i <= score ? colors[score-1] : '#e5e7eb';
+  }
+  const lbl = document.getElementById('pwdStrLabel');
+  lbl.textContent = labels[score-1] || '';
+  lbl.style.color = colors[score-1] || '#6b7280';
+}
+</script>
+</body>
+</html>
